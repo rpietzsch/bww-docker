@@ -1,14 +1,25 @@
+# configuration parameter
+MYSQL_JDBC_STRING=jdbc:mysql://192.168.59.103:49162/bww
+MYSQL_USER=root
+MYSQL_PASSWORD=lxit
+
+default: help
+
+## build the docker image
+build-docker-image:
+	docker build -t rpietzsch/bww-docker .
+
 ## Generate the initial mapping file based on the SQL data
 mapping:
-	docker run -it --rm -v `pwd`:/data testing ./run.sh --mapping --user root --pass lxit --jdbc jdbc:mysql://192.168.59.103:49162/bww
+	docker run -it --rm -v `pwd`:/data rpietzsch/bww-docker:latest ./run.sh --mapping --user $(MYSQL_USER) --pass $(MYSQL_PASSWORD) --jdbc $(MYSQL_JDBC_STRING)
 
 ## Transform the SQL data to RDF
 transform:
-	docker run -it --rm -v `pwd`:/data testing ./run.sh --transform --mapping-file bww-mapping.ttl
+	docker run -it --rm -v `pwd`:/data rpietzsch/bww-docker:latest ./run.sh --transform --mapping-file bww-mapping.ttl
 
 ## Enrich the RDF data
 enrich:
-	docker run -it --rm -v `pwd`:/data testing ./run.sh --enrich --rdf-file transformation.ttl
+	docker run -it --rm -v `pwd`:/data rpietzsch/bww-docker:latest ./run.sh --enrich --rdf-file transformation.ttl
 
 ## This help screen
 help:
