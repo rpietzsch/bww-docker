@@ -1,5 +1,4 @@
-# Busybox with a Tomcat installation
-
+# Busybox with a Java
 FROM progrium/busybox
 MAINTAINER Rene Pietzsch <rene.pietzsch@eccenca.com>
 
