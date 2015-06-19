@@ -1,0 +1,438 @@
+@prefix map: <#> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+@prefix jdbc: <http://d2rq.org/terms/jdbc/> .
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix dbpedia-owl: <http://dbpedia.org/ontology/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix sioc: <http://rdfs.org/sioc/ns#> .
+
+@prefix bww: <http://example.org/behoerdenwegweiser/schema/> .
+@prefix : <http://example.org/behoerdenwegweiser/data/> .
+
+map:Configuration a d2rq:Configuration;
+	d2rq:serveVocabulary true .
+
+map:database a d2rq:Database;
+	d2rq:jdbcDriver "com.mysql.jdbc.Driver";
+	d2rq:jdbcDSN "jdbc:mysql://192.168.59.103:49162/bww";
+	d2rq:username "root";
+	d2rq:password "lxit";
+	jdbc:autoReconnect "true";
+	jdbc:zeroDateTimeBehavior "convertToNull";
+#	d2rq:resultSizeLimit "10";
+	.
+
+# Table gebaeude
+map:gebaeude a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "http://example.org/behoerdenwegweiser/data/objnr-@@gebaeude.OBJNR|urlify@@";
+	d2rq:class org:Site;
+	d2rq:classDefinitionLabel "Gebäude"@de;
+	.
+
+map:gebaeude_OBJEKTBEZEICHNUNG a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property rdfs:label;
+	d2rq:lang "de";
+	d2rq:condition "gebaeude.OBJEKTBEZEICHNUNG <> ''";
+	d2rq:column "gebaeude.OBJEKTBEZEICHNUNG";
+	.
+map:gebaeude_OBJEKTBEZEICHNUNG_pref a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property skos:prefLabel;
+	d2rq:lang "de";
+	d2rq:condition "gebaeude.OBJEKTBEZEICHNUNG <> ''";
+	d2rq:column "gebaeude.OBJEKTBEZEICHNUNG";
+	d2rq:propertyDefinitionLabel "Präferierte Bezeichnung"@de;
+	.
+map:gebaeude_STRASSE a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property vcard:street-address;
+	d2rq:pattern "@@gebaeude.STRASSE@@ @@gebaeude.HNR@@@@gebaeude.ZUSATZ@@";
+	d2rq:propertyDefinitionLabel "Straße"@de;
+	.
+map:gebaeude_PLZ a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property vcard:postal-code;
+	d2rq:column "gebaeude.PLZ";
+	d2rq:propertyDefinitionLabel "Postleitzahl"@de;
+	.
+map:gebaeude_ORT a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property vcard:locality;
+	d2rq:uriPattern "http://dbpedia.org/resource/@@gebaeude.ORT|urlify@@";
+	d2rq:propertyDefinitionLabel "Ort"@de;
+	.
+map:gebaeude_STADTBEZIRK a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property dbpedia-owl:borough;
+	d2rq:condition "gebaeude.STADTBEZIRK <> ''";
+	d2rq:uriPattern "http://example.org/behoerdenwegweiser/data/@@gebaeude.STADTBEZIRK|urlify@@";
+	d2rq:propertyDefinitionLabel "Stadtteil"@de;
+	.
+map:gebaeude_NUTZER a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property bww:gebaeude_NUTZER;
+	d2rq:lang "de";
+	d2rq:condition "gebaeude.NUTZER <> ''";
+	d2rq:column "gebaeude.NUTZER";
+	d2rq:propertyDefinitionLabel "Nutzer"@de;
+	.
+map:gebaeude_BEMERKUNG a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property rdfs:comment;
+	d2rq:lang "de";
+	d2rq:condition "gebaeude.BEMERKUNG <> ''";
+	d2rq:column "gebaeude.BEMERKUNG";
+	d2rq:propertyDefinitionLabel "Bemerkung"@de;
+	.
+map:gebaeude_OBJNR a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property sioc:id;
+	d2rq:column "gebaeude.OBJNR";
+	d2rq:propertyDefinitionLabel "Objektnummer"@de;
+	.
+map:gebaeude_STRSCHL a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property bww:gebaeude_STRSCHL;
+	d2rq:propertyDefinitionLabel "gebaeude STRSCHL";
+	d2rq:condition "gebaeude.STRSCHL <> ''";
+	d2rq:column "gebaeude.STRSCHL";
+	d2rq:propertyDefinitionLabel "Schlüssel"@de;
+	.
+map:gebaeude_DATUMLETZTEAENDERUNG a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property dcterms:modified;
+	d2rq:column "gebaeude.DATUMLETZTEAENDERUNG";
+	d2rq:datatype xsd:dateTime;
+	d2rq:propertyDefinitionLabel "Letzte Änderung"@de;
+	.
+map:gebaeude_NUTZUNGSART a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property bww:gebaeude_NUTZUNGSART;
+	d2rq:condition "gebaeude.NUTZUNGSART <> ''";
+	d2rq:column "gebaeude.NUTZUNGSART";
+	d2rq:propertyDefinitionLabel "Nutzung"@de;
+	.
+map:gebaeude_STRASSENBAHN a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property bww:gebaeude_STRASSENBAHN;
+	d2rq:condition "gebaeude.STRASSENBAHN <> ''";
+	d2rq:column "gebaeude.STRASSENBAHN";
+	d2rq:propertyDefinitionLabel "Straßenbahn"@de;
+	.
+map:gebaeude_BUS a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property bww:gebaeude_BUS;
+	d2rq:condition "gebaeude.BUS <> ''";
+	d2rq:column "gebaeude.BUS";
+	d2rq:propertyDefinitionLabel "Bus"@de;
+	.
+map:gebaeude_SBAHN a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property bww:gebaeude_SBAHN;
+	d2rq:condition "gebaeude.SBAHN <> ''";
+	d2rq:column "gebaeude.SBAHN";
+	d2rq:propertyDefinitionLabel "S-Bahn"@de;
+	.
+map:gebaeude_EINGANG a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property bww:gebaeude_EINGANG;
+	d2rq:condition "gebaeude.EINGANG <> ''";
+	d2rq:column "gebaeude.EINGANG";
+	d2rq:propertyDefinitionLabel "Eingang"@de;
+	.
+map:gebaeude_WC a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property bww:gebaeude_WC;
+	d2rq:condition "gebaeude.WC <> ''";
+	d2rq:column "gebaeude.WC";
+	d2rq:propertyDefinitionLabel "WC"@de;
+	.
+map:gebaeude_AUFZUG a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property bww:gebaeude_AUFZUG;
+	d2rq:condition "gebaeude.AUFZUG <> ''";
+	d2rq:column "gebaeude.AUFZUG";
+	d2rq:propertyDefinitionLabel "Aufzug"@de;
+	.
+map:gebaeude_HILFE a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property bww:gebaeude_HILFE;
+	d2rq:condition "gebaeude.HILFE <> ''";
+	d2rq:column "gebaeude.HILFE";
+	d2rq:propertyDefinitionLabel "Hilfe"@de;
+	.
+map:gebaeude_PARKEN a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:gebaeude;
+	d2rq:property bww:gebaeude_PARKEN;
+	d2rq:condition "gebaeude.PARKEN <> ''";
+	d2rq:column "gebaeude.PARKEN";
+	d2rq:propertyDefinitionLabel "Parkplatz"@de;
+	.
+#map:gebaeude_XKOORD a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:gebaeude;
+#	d2rq:property geo:lat;
+#	d2rq:condition "gebaeude.XKOORD <> ''";
+#	d2rq:column "gebaeude.XKOORD";
+#	.
+#map:gebaeude_YKOORD a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:gebaeude;
+#	d2rq:property geo:long;
+#	d2rq:condition "gebaeude.YKOORD <> ''";
+#	d2rq:column "gebaeude.YKOORD";
+#	.
+#map:gebaeude_MODIFY_DATE a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:gebaeude;
+#	d2rq:property vocab:gebaeude_MODIFY_DATE;
+#	d2rq:propertyDefinitionLabel "gebaeude MODIFY_DATE";
+#	d2rq:column "gebaeude.MODIFY_DATE";
+#	d2rq:datatype xsd:dateTime;
+#	.
+#map:gebaeude_LASTIMPORT a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:gebaeude;
+#	d2rq:property vocab:gebaeude_LASTIMPORT;
+#	d2rq:propertyDefinitionLabel "gebaeude LASTIMPORT";
+#	d2rq:column "gebaeude.LASTIMPORT";
+#	d2rq:datatype xsd:dateTime;
+#	.
+#map:gebaeude_ISDELETED a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:gebaeude;
+#	d2rq:property vocab:gebaeude_ISDELETED;
+#	d2rq:propertyDefinitionLabel "gebaeude ISDELETED";
+#	d2rq:column "gebaeude.ISDELETED";
+#	d2rq:datatype xsd:integer;
+#	.
+
+# Table kontakte
+map:kontakte a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "http://example.org/behoerdenwegweiser/data/id-@@kontakte.ID|urlify@@";
+	d2rq:class foaf:Person;
+	d2rq:condition "kontakte.LEITER = 1";
+	d2rq:classDefinitionLabel "Kontakt"@de;
+	.
+map:kontakte_NACHNAME a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:kontakte;
+	d2rq:property foaf:lastName;
+	d2rq:column "kontakte.NACHNAME";
+	d2rq:propertyDefinitionLabel "Nachname"@de;
+	.
+map:kontakte_NAME a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:kontakte;
+	d2rq:property rdfs:label;
+	d2rq:pattern "@@kontakte.VORNAME@@ @@kontakte.NACHNAME@@";
+	d2rq:propertyDefinitionLabel "Vollständiger Name"@de;
+	.
+map:kontakte_VORNAME a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:kontakte;
+	d2rq:property foaf:firstName;
+	d2rq:column "kontakte.VORNAME";
+	d2rq:propertyDefinitionLabel "Vorname"@de;
+	.
+map:kontakte_ANREDE a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:kontakte;
+	d2rq:property foaf:gender;
+	d2rq:condition "kontakte.ANREDE <> ''";
+	d2rq:column "kontakte.ANREDE";
+	d2rq:propertyDefinitionLabel "Anrede"@de;
+	.
+map:kontakte_TITEL a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:kontakte;
+	d2rq:property foaf:title;
+	d2rq:condition "kontakte.TITEL <> ''";
+	d2rq:column "kontakte.TITEL";
+	d2rq:propertyDefinitionLabel "Titel"@de;
+	.
+map:kontakte_TAETIGKEIT a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:kontakte;
+	d2rq:property vcard:role;
+	d2rq:condition "kontakte.TAETIGKEIT <> ''";
+	d2rq:column "kontakte.TAETIGKEIT";
+	d2rq:propertyDefinitionLabel "Tätigkeit"@de;
+	.
+map:kontakte_TELEFON a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:kontakte;
+	d2rq:property vcard:tel;
+	d2rq:condition "kontakte.TELEFON <> ''";
+	d2rq:uriPattern "tel:@@kontakte.TELEFON|encode@@";
+	d2rq:propertyDefinitionLabel "Telefon"@de;
+	.
+#map:kontakte_TELGEAENDERT a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:kontakte;
+#	d2rq:property vocab:kontakte_TELGEAENDERT;
+#	d2rq:propertyDefinitionLabel "kontakte TELGEAENDERT";
+#	d2rq:column "kontakte.TELGEAENDERT";
+#	d2rq:datatype xsd:dateTime;
+#	.
+#map:kontakte_NAMEGEAENDERT a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:kontakte;
+#	d2rq:property vocab:kontakte_NAMEGEAENDERT;
+#	d2rq:propertyDefinitionLabel "kontakte NAMEGEAENDERT";
+#	d2rq:column "kontakte.NAMEGEAENDERT";
+#	d2rq:datatype xsd:dateTime;
+#	.
+map:kontakte_AMTNR a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:kontakte;
+	d2rq:property org:memberOf;
+	d2rq:uriPattern "http://example.org/behoerdenwegweiser/data/snr-@@kontakte.AMTNR|urlify@@";
+	d2rq:propertyDefinitionLabel "Behördenzugehörigkeit"@de;
+	.
+map:kontakte_GEBSCHL a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:kontakte;
+	d2rq:property org:basedAt;
+	d2rq:uriPattern "http://example.org/behoerdenwegweiser/data/objnr-@@kontakte.GEBSCHL|urlify@@";
+	d2rq:propertyDefinitionLabel "Arbeitsort"@de;
+	.
+map:kontakte_ZI a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:kontakte;
+	d2rq:property bww:kontakte_ZI;
+	d2rq:condition "kontakte.ZI <> ''";
+	d2rq:column "kontakte.ZI";
+	d2rq:propertyDefinitionLabel "Zimmer"@de;
+	.
+map:kontakte_MODIFY_DATE a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:kontakte;
+	d2rq:property dcterms:modified;
+	d2rq:column "kontakte.MODIFY_DATE";
+	d2rq:datatype xsd:dateTime;
+	.
+#map:kontakte_LASTIMPORT a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:kontakte;
+#	d2rq:property vocab:kontakte_LASTIMPORT;
+#	d2rq:propertyDefinitionLabel "kontakte LASTIMPORT";
+#	d2rq:column "kontakte.LASTIMPORT";
+#	d2rq:datatype xsd:dateTime;
+#	.
+map:kontakte_LEITER a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:kontakte;
+	d2rq:property org:headOf;
+	d2rq:uriPattern "http://example.org/behoerdenwegweiser/data/snr-@@kontakte.AMTNR|urlify@@";
+	d2rq:condition "kontakte.LEITER = 1";
+	d2rq:propertyDefinitionLabel "Leiter von"@de;
+	.
+map:kontakte_ID a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:kontakte;
+	d2rq:property sioc:id;
+	d2rq:column "kontakte.ID";
+	d2rq:propertyDefinitionLabel "ID"@de;
+	.
+#map:kontakte_ISDELETED a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:kontakte;
+#	d2rq:property vocab:kontakte_ISDELETED;
+#	d2rq:propertyDefinitionLabel "kontakte ISDELETED";
+#	d2rq:column "kontakte.ISDELETED";
+#	d2rq:datatype xsd:integer;
+#	.
+
+# Table oe
+map:oe a d2rq:ClassMap;
+	d2rq:dataStorage map:database;
+	d2rq:uriPattern "http://example.org/behoerdenwegweiser/data/snr-@@oe.SNR|urlify@@";
+	d2rq:class org:OrganizationalUnit;
+	d2rq:classDefinitionLabel "Behörde"@de;
+	.
+#map:oe_ANR a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:oe;
+#	d2rq:property org:subOrganizationOf;
+#	d2rq:uriPattern "http://example.org/behoerdenwegweiser/data/@@oe.ANR|urlify@@";
+#	.
+map:oe_DEZERNAT a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:oe;
+	d2rq:property skos:prefLabel;
+	d2rq:property rdfs:label;
+	d2rq:lang "de";
+	d2rq:condition "oe.SNR = oe.DEZNR";
+	d2rq:column "oe.DEZERNAT";
+	d2rq:propertyDefinitionLabel "Bezeichnung"@de;
+	.
+map:oe_AMT a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:oe;
+	d2rq:property skos:prefLabel;
+	d2rq:property rdfs:label;
+	d2rq:lang "de";
+	d2rq:condition "oe.SNR <> oe.DEZNR";
+	d2rq:condition "oe.ABTNR = ''";
+	d2rq:condition "oe.SGNR = ''";
+	d2rq:column "oe.AMT";
+	d2rq:propertyDefinitionLabel "Bezeichnung"@de;
+	.
+map:oe_ABT a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:oe;
+	d2rq:property skos:prefLabel;
+	d2rq:property rdfs:label;
+	d2rq:lang "de";
+	d2rq:condition "oe.ABTNR <> ''";
+	d2rq:condition "oe.SGNR = ''";
+	d2rq:column "oe.ABT";
+	d2rq:propertyDefinitionLabel "Bezeichnung"@de;
+	.
+map:oe_SG a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:oe;
+	d2rq:property skos:prefLabel;
+	d2rq:property rdfs:label;
+	d2rq:lang "de";
+	d2rq:condition "oe.SGNR <> ''";
+	d2rq:column "oe.SG";
+	d2rq:propertyDefinitionLabel "Bezeichnung"@de;
+	.
+#map:oe_DEZNR a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:oe;
+#	d2rq:property vocab:oe_DEZNR;
+#	d2rq:propertyDefinitionLabel "oe DEZNR";
+#	d2rq:column "oe.DEZNR";
+#	.
+#map:oe_ABTNR a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:oe;
+#	d2rq:property vocab:oe_ABTNR;
+#	d2rq:propertyDefinitionLabel "oe ABTNR";
+#	d2rq:column "oe.ABTNR";
+#	.
+#map:oe_SGNR a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:oe;
+#	d2rq:property vocab:oe_SGNR;
+#	d2rq:propertyDefinitionLabel "oe SGNR";
+#	d2rq:column "oe.SGNR";
+#	.
+map:oe_MODIFY_DATE a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:oe;
+	d2rq:property dcterms:modified;
+	d2rq:column "oe.MODIFY_DATE";
+	d2rq:datatype xsd:dateTime;
+	.
+map:oe_SNR a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:oe;
+	d2rq:property org:identifier;
+	d2rq:column "oe.SNR";
+	d2rq:propertyDefinitionLabel "Behördennummer"@de;
+	.
+#map:oe_LASTIMPORT a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:oe;
+#	d2rq:property vocab:oe_LASTIMPORT;
+#	d2rq:propertyDefinitionLabel "oe LASTIMPORT";
+#	d2rq:column "oe.LASTIMPORT";
+#	d2rq:datatype xsd:dateTime;
+#	.
+#map:oe_ISDELETED a d2rq:PropertyBridge;
+#	d2rq:belongsToClassMap map:oe;
+#	d2rq:property vocab:oe_ISDELETED;
+#	d2rq:propertyDefinitionLabel "oe ISDELETED";
+#	d2rq:column "oe.ISDELETED";
+#	d2rq:datatype xsd:integer;
+#	.
+map:oe_PARENT a d2rq:PropertyBridge;
+	d2rq:belongsToClassMap map:oe;
+	d2rq:property org:subOrganizationOf;
+	d2rq:condition "oe.PARENT <> '(übergeordnet)'";
+	d2rq:uriPattern "http://example.org/behoerdenwegweiser/data/snr-@@oe.PARENT|urlify@@";
+	d2rq:propertyDefinitionLabel "Übergeordnete Behörde"@de;
+	.
